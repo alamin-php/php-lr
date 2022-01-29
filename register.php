@@ -1,10 +1,25 @@
-<?php include "inc/header.php" ?>
+<?php 
+    include "inc/header.php";
+    include "lib/User.php";
+?>
+<?php 
+    $user = new User();
+
+    if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['register'])){
+        $userRegi = $user->userRegistration($_POST);
+    }
+?>
 <div class="card  mt-3">
     <div class="card-header">
         <h2>User Registration</h2>
     </div>
     <div class="card-body">
         <div style="max-width: 600px; margin: 0 auto;">
+        <?php 
+            if(isset($userRegi)){
+                echo $userRegi;
+            }
+        ?>
             <form action="" method="post">
                 <div class="form-group">
                     <label for="">Name</label>
@@ -16,7 +31,7 @@
                 </div>
                 <div class="form-group">
                     <label for="">Email Address</label>
-                    <input type="email" class="form-control" name="email" id="" aria-describedby="emailHelpId" placeholder="">
+                    <input type="text" class="form-control" name="email" id="" aria-describedby="emailHelpId" placeholder="">
                 </div>
                 <div class="form-group">
                     <label for="">Password</label>

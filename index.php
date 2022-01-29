@@ -1,4 +1,8 @@
-<?php include "inc/header.php" ?>
+<?php 
+    include "inc/header.php";
+    include "lib/User.php";
+    $user = new User();
+?>
 <div class="card  mt-3">
     <div class="card-header">
                 <h2>User List <span class="float-right">Welcome! <strong>alamin</strong></span></h2>
