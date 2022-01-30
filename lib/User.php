@@ -8,10 +8,11 @@
             $this->db = new Database();
         }
         public function userRegistration($data){
-            $name       = $data['name'];
-            $username   = $data['username'];
-            $email      = $data['email'];
-            $password   = $data['password'];
+            $name       = $this->validation($data['name']);
+            $username   = $this->validation($data['username']);
+            $email      = $this->validation($data['email']);
+            $password   = $this->validation($data['password']);
+
             $user_chk  = $this->checkUser($username);
             $email_chk  = $this->checkEmail($email);
 
@@ -64,6 +65,13 @@
 
         }
 
+        public function readAll(){
+            $sql = "SELECT * FROM tbl_user";
+            $query = $this->db->pdo->prepare($sql);
+            $query->execute();
+            return $query->fetchAll();
+        }
+
         public function checkUser($username){
             $sql = "SELECT username FROM tbl_user WHERE username=:username";
             $query = $this->db->pdo->prepare($sql);
@@ -87,6 +95,13 @@
             }else{
                 return false;
             }
+        }
+
+        public function validation($data){
+            $data = trim($data);
+            $data = htmlspecialchars($data);
+            $data = stripslashes($data);
+            return $data;
         }
 
     }

@@ -19,25 +19,23 @@
                         </tr>
                     </thead>
                     <tbody>
+                        <?php
+                            $i = 0;
+                            $users = $user->readAll();
+                            foreach($users as $value){
+                            $i++;
+                        ?>
                         <tr>
-                            <th scope="row">1</th>
-                            <td>Mark</td>
-                            <td>mark</td>
-                            <td>mark@gmail.com</td>
+                            <th scope="row"><?php echo $i; ?></th>
+                            <td><?php echo $value['name'] ?></td>
+                            <td><?php echo $value['username'] ?></td>
+                            <td><?php echo $value['email'] ?></td>
                             <td>
                                 <a href="#" class="btn btn-primary">View</a>
                             </td>
                         </tr>
+                        <?php } ?>
                     </tbody>
-                    <tr>
-                        <th scope="row">2</th>
-                        <td>Johan Due</td>
-                        <td>johan</td>
-                        <td>johan@gmail.com</td>
-                        <td>
-                            <a href="#" class="btn btn-primary">View</a>
-                        </td>
-                    </tr>
                 </tbody>
             </table>
         </div>
