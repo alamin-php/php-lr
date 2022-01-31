@@ -1,4 +1,7 @@
-<?php include "inc/header.php" ?>
+<?php 
+    include "inc/header.php";
+    Session::checkSession();
+?>
 <div class="card  mt-3">
     <div class="card-header">
         <h2>User Profile</h2>

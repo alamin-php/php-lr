@@ -1,11 +1,8 @@
 <?php 
+    include_once "Session.php";
     include "Database.php";
 
     class User {
-        public $name;
-        public $username;
-        public $email;
-        public $password;
         private $db;
 
         public function __construct(){
@@ -14,23 +11,23 @@
 
         // ---------------------Registration --------------------
         public function userRegistration($data){
-            $this->name       = $this->validation($data['name']);
-            $this->username   = $this->validation($data['username']);
-            $this->email      = $this->validation($data['email']);
-            $this->password   = $this->validation($data['password']);
+            $name       = $this->validation($data['name']);
+            $username   = $this->validation($data['username']);
+            $email      = $this->validation($data['email']);
+            $password   = $this->validation($data['password']);
 
-            $user_chk  = $this->checkUser($this->username);
-            $email_chk  = $this->checkEmail($this->email);
+            $user_chk  = $this->checkUser($username);
+            $email_chk  = $this->checkEmail($email);
 
-            if($this->name == "" OR $this->username == "" OR $this->email == "" OR ($this->password == "" && empty($this->password)) ){
+            if($name == "" OR $username == "" OR $email == "" OR ($password == "" && empty($password)) ){
                 $msg = "<div class='alert alert-danger'><strong>Error ! </strong>Field must not be Empty</div>";
                 return $msg;
             }
 
-            if(strlen($this->username) < 3){
+            if(strlen($username) < 3){
                 $msg = "<div class='alert alert-danger'><strong>Error ! </strong>Username is too Short</div>";
                 return $msg;
-            }elseif(preg_match("/[^a-z0-9_-]+/i", $this->username)){
+            }elseif(preg_match("/[^a-z0-9_-]+/i", $username)){
                 $msg = "<div class='alert alert-danger'><strong>Error ! </strong>Username must only content alphanmerical, dashes and underscores!</div>";
                 return $msg;
             }elseif($user_chk == true){
@@ -38,7 +35,7 @@
                 return $msg;
             }
 
-            if(filter_var($this->email, FILTER_VALIDATE_EMAIL) == FALSE){
+            if(filter_var($email, FILTER_VALIDATE_EMAIL) == FALSE){
                 $msg = "<div class='alert alert-danger'><strong>Error ! </strong>The email address is not valid!</div>";
                 return $msg;
             }
@@ -47,33 +44,54 @@
                 $msg = "<div class='alert alert-danger'><strong>Error ! </strong>The email address is already Exits.</div>";
                 return $msg;
             }
-            if(strlen($this->password) < 3){
+            if(strlen($password) < 3){
                 $msg = "<div class='alert alert-danger'><strong>Error ! </strong>Password too much short.</div>";
                 return $msg;
             }
 
-            $dataInsert = $this->insert();
+            // ---------------------Insert to database users data --------------------
 
-            if($dataInsert){
+            $sql = "INSERT INTO tbl_user (name, username, email, password) VALUES(:name, :username, :email, :password)";
+            $query = $this->db->pdo->prepare($sql);
+            $query->bindValue(':name', ucfirst($name));
+            $query->bindValue(':username', strtolower($username));
+            $query->bindValue(':email', strtolower($email));
+            $query->bindValue(':password', md5($password));
+            $result = $query->execute();
+            if($result){
                 $msg = "<div class='alert alert-success'><strong>Success ! </strong>Thank you, You have been registered.</div>";
                 return $msg;
             }else{
                 $msg = "<div class='alert alert-danger'><strong>Error ! </strong>Sorry, there has been problem inserting your details!</div>";
                 return $msg;
             }
-
         }
 
         // ---------------------Login--------------------
+
+        public function getLoginUser($email, $password){
+            $sql = "SELECT * FROM tbl_user WHERE email = :email AND password = :password LIMIT 1";
+            $query = $this->db->pdo->prepare($sql);
+            $query->bindValue(':email', $email);
+            $query->bindValue(':password', $password);
+            $query->execute();
+            $result = $query->fetch(PDO::FETCH_OBJ);
+            return $result;
+        }
+
         public function userLogin($data){
-            $this->email      = $this->validation($data['email']);
-            $this->password   = $this->validation($data['password']);
+            $email      = $data['email'];
+            $password   = md5($data['password']);
 
-            $email_chk  = $this->checkEmail($this->email);
-            $password_chk  = $this->checkPassword($password);
+            $email_chk  = $this->checkEmail($email);
 
-            if(($this->email == "" AND empty($this->password) ) OR ($this->password == "" AND empty($this->password))){
+            if(($email == "" AND empty($password) ) OR ($password == "" AND empty($password))){
                 $msg = "<div class='alert alert-danger'><strong>Error ! </strong>Field must not be Empty</div>";
+                return $msg;
+            }
+
+            if(filter_var($email, FILTER_VALIDATE_EMAIL) == FALSE){
+                $msg = "<div class='alert alert-danger'><strong>Error ! </strong>The email address is not valid!</div>";
                 return $msg;
             }
 
@@ -82,22 +100,19 @@
                 return $msg;
             }
 
-            if($password_chk == false){
-                $msg = "<div class='alert alert-danger'><strong>Error ! </strong>Your password is Wrong. Please check & again try.</div>";
+            $result = $this->getLoginUser($email, $password);
+            if($result){
+                Session::init();
+                Session::set('login', true);
+                Session::set('id', $result->id);
+                Session::set('name', $result->name);
+                Session::set('username', $result->username);
+                Session::set('loginmsg', "<div class='alert alert-success'><strong>Success ! </strong>You are LoggedIn.</div>");
+                header('Location: index.php');
+            }else{
+                $msg = "<div class='alert alert-danger'><strong>Error ! </strong>Data not found!</div>";
                 return $msg;
             }
-        }
-        
-        // ---------------------Insert to database users data --------------------
-        public function insert(){
-            $sql = "INSERT INTO tbl_user (name, username, email, password) VALUES(:name, :username, :email, :password)";
-            $query = $this->db->pdo->prepare($sql);
-            $query->bindValue(':name', ucfirst($this->name));
-            $query->bindValue(':username', strtolower($this->username));
-            $query->bindValue(':email', strtolower($this->email));
-            $query->bindValue(':password', md5($this->password));
-            $result = $query->execute();
-            return $result;
         }
 
         // ---------------------Get all users data --------------------
@@ -127,21 +142,6 @@
             $sql = "SELECT email FROM tbl_user WHERE email=:email";
             $query = $this->db->pdo->prepare($sql);
             $query->bindValue(':email', $email);
-            $query->execute();
-            $result = $query->rowCount();
-            if($result > 0){
-                return true;
-            }else{
-                return false;
-            }
-        }
-
-        // ---------------------Password checking --------------------
-        public function checkPassword($password){
-            $password = md5($password);
-            $sql = "SELECT password FROM tbl_user WHERE password=:password";
-            $query = $this->db->pdo->prepare($sql);
-            $query->bindValue(':password', $password);
             $query->execute();
             $result = $query->rowCount();
             if($result > 0){

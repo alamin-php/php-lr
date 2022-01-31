@@ -1,11 +1,27 @@
 <?php 
     include "inc/header.php";
     include "lib/User.php";
+    Session::checkSession();
     $user = new User();
 ?>
+
+<div class="my-3">
+<?php 
+    $loginmsg = Session::get('loginmsg');
+    if(isset($loginmsg)){
+        echo $loginmsg;
+    }
+    Session::set('loginmsg', NULL);
+?>
+</div>
 <div class="card  mt-3">
     <div class="card-header">
-                <h2>User List <span class="float-right">Welcome! <strong>alamin</strong></span></h2>
+                <h2>User List <span class="float-right">Welcome! <strong>
+                    <?php 
+                        $username = Session::get('username');
+                        echo $username;
+                    ?>
+                </strong></span></h2>
             </div>
             <div class="card-body">
                 <table class="table table-bordered">

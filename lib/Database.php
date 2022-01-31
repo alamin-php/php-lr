@@ -3,7 +3,7 @@
         private $db_host = "localhost";
         private $db_name = "db_lr";
         private $db_user = "root";
-        private $db_pass = "";
+        private $db_pass = "mysql";
         public $pdo;
         public function __construct(){
             if(!isset($this->pdo)){
