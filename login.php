@@ -1,10 +1,24 @@
-<?php include "inc/header.php" ?>
+<?php 
+    include "inc/header.php";
+    include "lib/User.php";
+?>
+<?php 
+    $user = new User();
+    if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['login'])){
+        $userLogin = $user->userLogin($_POST);
+    }
+?>
 <div class="card  mt-3">
     <div class="card-header">
         <h2>User Login</h2>
     </div>
     <div class="card-body">
         <div style="max-width: 600px; margin: 0 auto;">
+        <?php 
+            if(isset($userLogin)){
+                echo $userLogin;
+            }
+        ?>
             <form action="" method="post">
                 <div class="form-group">
                     <label for="">Email Address</label>

@@ -20,7 +20,7 @@
                 echo $userRegi;
             }
         ?>
-            <form action="" method="post">
+            <form action="<?php echo $user->validation($_SERVER['PHP_SELF']); ?>" method="post">
                 <div class="form-group">
                     <label for="">Name</label>
                     <input type="text" class="form-control" name="name" id="" aria-describedby="emailHelpId" placeholder="">
