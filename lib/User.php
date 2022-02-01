@@ -115,12 +115,64 @@
             }
         }
 
+        // ---------------------Profile Update --------------------
+        public function updateUserData($id, $data){
+            $name       = $this->validation($data['name']);
+            $username   = $this->validation($data['username']);
+            $email      = $this->validation($data['email']);
+
+            if($name == "" OR $username == "" OR $email == ""){
+                $msg = "<div class='alert alert-danger'><strong>Error ! </strong>Field must not be Empty</div>";
+                return $msg;
+            }
+
+            if(strlen($username) < 3){
+                $msg = "<div class='alert alert-danger'><strong>Error ! </strong>Username is too Short</div>";
+                return $msg;
+            }elseif(preg_match("/[^a-z0-9_-]+/i", $username)){
+                $msg = "<div class='alert alert-danger'><strong>Error ! </strong>Username must only content alphanmerical, dashes and underscores!</div>";
+                return $msg;
+            }
+
+            if(filter_var($email, FILTER_VALIDATE_EMAIL) == FALSE){
+                $msg = "<div class='alert alert-danger'><strong>Error ! </strong>The email address is not valid!</div>";
+                return $msg;
+            }
+
+            // ---------------------Update Profile to database users data --------------------
+
+            $sql = "UPDATE tbl_user SET name = ':name', username = ':username', email = ':email' WHERE id =':id' ";
+            $query = $this->db->pdo->prepare($sql);
+            $query->bindValue(':name', ucfirst($name));
+            $query->bindValue(':username', strtolower($username));
+            $query->bindValue(':email', strtolower($email));
+            $query->bindValue(':id', $id);
+            $result = $query->execute();
+            if($result){
+                $msg = "<div class='alert alert-success'><strong>Success ! </strong>Profile updated successfully.</div>";
+                return $msg;
+            }else{
+                $msg = "<div class='alert alert-danger'><strong>Error ! </strong>Sorry, there has been problem inserting your details!</div>";
+                return $msg;
+            }
+        }
+
         // ---------------------Get all users data --------------------
-        public function readAll(){
-            $sql = "SELECT * FROM tbl_user";
+        public function getUserData(){
+            $sql = "SELECT * FROM tbl_user ORDER BY id DESC";
             $query = $this->db->pdo->prepare($sql);
             $query->execute();
             return $query->fetchAll();
+        }
+
+        // ---------------------Get user data by ID --------------------
+        public function getUserById($userId){
+            $sql = "SELECT * FROM tbl_user where id = :id LIMIT 1";
+            $query = $this->db->pdo->prepare($sql);
+            $query->bindValue(':id', $userId);
+            $query->execute();
+            $result = $query->fetch(PDO::FETCH_OBJ);
+            return $result;
         }
 
         // ---------------------Username checking --------------------

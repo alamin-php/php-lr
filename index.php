@@ -37,7 +37,7 @@
                     <tbody>
                         <?php
                             $i = 0;
-                            $users = $user->readAll();
+                            $users = $user->getUserData();
                             foreach($users as $value){
                             $i++;
                         ?>
@@ -47,7 +47,7 @@
                             <td><?php echo $value['username'] ?></td>
                             <td><?php echo $value['email'] ?></td>
                             <td>
-                                <a href="#" class="btn btn-primary">View</a>
+                                <a href="profile.php?id=<?php echo $value['id']; ?>" class="btn btn-primary">View</a>
                             </td>
                         </tr>
                         <?php } ?>
