@@ -141,7 +141,7 @@
 
             // ---------------------Update Profile to database users data --------------------
 
-            $sql = "UPDATE tbl_user SET name = ':name', username = ':username', email = ':email' WHERE id =':id' ";
+            $sql = "UPDATE tbl_user SET name = :name, username = :username, email = :email WHERE id =:id ";
             $query = $this->db->pdo->prepare($sql);
             $query->bindValue(':name', ucfirst($name));
             $query->bindValue(':username', strtolower($username));

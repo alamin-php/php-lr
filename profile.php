@@ -10,7 +10,7 @@
     }
     $user = new User();
     if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['update'])){
-        $userLogin = $user->updateUserData($userId, $_POST);
+        $updateProfile = $user->updateUserData($userId, $_POST);
     }
     
 ?>
