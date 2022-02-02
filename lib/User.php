@@ -44,8 +44,8 @@
                 $msg = "<div class='alert alert-danger'><strong>Error ! </strong>The email address is already Exits.</div>";
                 return $msg;
             }
-            if(strlen($password) < 3){
-                $msg = "<div class='alert alert-danger'><strong>Error ! </strong>Password too much short.</div>";
+            if(strlen($password) < 6){
+                $msg = "<div class='alert alert-danger'><strong>Error ! </strong>Password must be gaterthe 6 digit.</div>";
                 return $msg;
             }
 
@@ -157,6 +157,40 @@
             }
         }
 
+        // ---------------------Change user password --------------------
+        public function updateUserPass($id, $data){
+            $old_pass = md5($data['old_pass']);
+            $new_pass = $data['password'];
+            $password_chk = $this->checkPassword($id, $old_pass);
+
+            if($old_pass == "" OR ($new_pass == "" AND empty($new_pass))){
+                $msg = "<div class='alert alert-danger'><strong>Error ! </strong>Field must not be Empty</div>";
+                return $msg;
+            }
+            if($password_chk == false){
+                $msg = "<div class='alert alert-danger'><strong>Error ! </strong>Old password not Match</div>";
+                return $msg;
+            }
+            if(strlen($new_pass) < 6){
+                $msg = "<div class='alert alert-danger'><strong>Error ! </strong>Password must be gater then 6 digit.</div>";
+                return $msg;
+            }
+
+            $sql = "UPDATE tbl_user SET password = :password WHERE id =:id ";
+            $query = $this->db->pdo->prepare($sql);
+            $query->bindValue(':password', md5($new_pass));
+            $query->bindValue(':id', $id);
+            $result = $query->execute();
+            if($result){
+                $msg = "<div class='alert alert-success'><strong>Success ! </strong>Password changed successfully.</div>";
+                return $msg;
+            }else{
+                $msg = "<div class='alert alert-danger'><strong>Error ! </strong>Sorry, Password not changed!</div>";
+                return $msg;
+            }
+
+        }
+
         // ---------------------Get all users data --------------------
         public function getUserData(){
             $sql = "SELECT * FROM tbl_user ORDER BY id DESC";
@@ -194,6 +228,20 @@
             $sql = "SELECT email FROM tbl_user WHERE email=:email";
             $query = $this->db->pdo->prepare($sql);
             $query->bindValue(':email', $email);
+            $query->execute();
+            $result = $query->rowCount();
+            if($result > 0){
+                return true;
+            }else{
+                return false;
+            }
+        }
+        // ---------------------Password checking --------------------
+        public function checkPassword($id, $password){
+            $sql = "SELECT email FROM tbl_user WHERE password=:password AND id=:id";
+            $query = $this->db->pdo->prepare($sql);
+            $query->bindValue(':password', $password);
+            $query->bindValue(':id', $id);
             $query->execute();
             $result = $query->rowCount();
             if($result > 0){

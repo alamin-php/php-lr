@@ -16,7 +16,7 @@
 ?>
 <div class="card  mt-3">
     <div class="card-header">
-        <h2>User Profile</h2>
+        <h2>User Profile <span><a href="index.php" class="btn btn-primary float-right">Back</a></span></h2>
     </div>
     <div class="card-body">
         <div style="max-width: 600px; margin: 0 auto;">
@@ -49,6 +49,7 @@
                        
                 ?>
                 <button type="submit" name="update" class="btn btn-success">Update</button>
+                <a class="btn btn-info" href="changepass.php?id=<?php echo $userdata->id; ?>">Password Change</a>
                 <?php } ?>
             </form>
             <?php } ?>

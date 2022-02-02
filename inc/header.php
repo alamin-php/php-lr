@@ -38,7 +38,10 @@
                         if($userLogin == true){
                     ?>
                     <li class="nav-item active">
-                        <a class="nav-link" href="profile.php?id=<?php echo $id; ?>">Profile <span class="sr-only">(current)</span></a>
+                        <a class="nav-link" href="index.php">Home <span class="sr-only">(current)</span></a>
+                    </li>                    
+                    <li class="nav-item active">
+                        <a class="nav-link" href="profile.php?id=<?php echo $id; ?>">Profile</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="?action=logout">Logout</a>
